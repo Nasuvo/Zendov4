@@ -4,6 +4,82 @@
 var map;
 var markers = [];
 
+// Header scroll effect, placeholder animation, and mobile menu
+document.addEventListener('DOMContentLoaded', function() {
+    const header = document.querySelector('.header');
+    const searchInput = document.getElementById('ai-search-input');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 10) {
+            header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
+        } else {
+            header.style.boxShadow = '0 1px 4px rgba(0, 0, 0, 0.04)';
+        }
+    });
+    
+    // Mobile menu toggle
+    if (mobileMenuBtn && mobileNav) {
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenuBtn.classList.toggle('active');
+            mobileNav.classList.toggle('show');
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!mobileMenuBtn.contains(event.target) && !mobileNav.contains(event.target)) {
+                mobileMenuBtn.classList.remove('active');
+                mobileNav.classList.remove('show');
+            }
+        });
+    }
+    
+    // Placeholder typing effect
+    if (searchInput) {
+        const placeholders = [
+            "Try: 2 bedroom home in Bondi with a pool under $1.5M",
+            "Try: 3 bedroom apartment in Melbourne CBD near transport",
+            "Try: family home in Sydney with garden and parking",
+            "Try: waterfront property in Gold Coast under $2M"
+        ];
+        
+        let currentIndex = 0;
+        let currentPlaceholder = '';
+        let isDeleting = false;
+        let typingSpeed = 100;
+        
+        function typePlaceholder() {
+            const targetPlaceholder = placeholders[currentIndex];
+            
+            if (isDeleting) {
+                currentPlaceholder = targetPlaceholder.substring(0, currentPlaceholder.length - 1);
+                typingSpeed = 50;
+            } else {
+                currentPlaceholder = targetPlaceholder.substring(0, currentPlaceholder.length + 1);
+                typingSpeed = 100;
+            }
+            
+            searchInput.placeholder = currentPlaceholder;
+            
+            if (!isDeleting && currentPlaceholder === targetPlaceholder) {
+                typingSpeed = 2000; // Pause at end
+                isDeleting = true;
+            } else if (isDeleting && currentPlaceholder === '') {
+                isDeleting = false;
+                currentIndex = (currentIndex + 1) % placeholders.length;
+                typingSpeed = 500; // Pause before next word
+            }
+            
+            setTimeout(typePlaceholder, typingSpeed);
+        }
+        
+        // Start typing effect after a delay
+        setTimeout(typePlaceholder, 1000);
+    }
+});
+
 // Enhanced property database with coordinates and proximity data
 const propertyDatabase = [
     // Rowville Properties
@@ -21,7 +97,14 @@ const propertyDatabase = [
         parking: 2,
         features: ['Large Garden', 'Study', 'Garage'],
         tags: ['family', 'suburban', 'spacious'],
-        proximity: { schools: 0.9, transport: 1.2, shops: 0.7, parks: 0.5 }
+        proximity: { schools: 0.9, transport: 1.2, shops: 0.7, parks: 0.5 },
+        image: 'https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=600&q=80',
+        images: [
+            'https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=700&q=80'
+        ],
+        floorplan: 'https://placehold.co/700x400?text=Floor+Plan'
     },
     {
         id: 2,
@@ -37,7 +120,14 @@ const propertyDatabase = [
         parking: 2,
         features: ['Modern Kitchen', 'Study', 'Garden'],
         tags: ['modern', 'townhouse', 'family'],
-        proximity: { schools: 1.1, transport: 1.0, shops: 0.8, parks: 0.6 }
+        proximity: { schools: 1.1, transport: 1.0, shops: 0.8, parks: 0.6 },
+        image: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80',
+        images: [
+            'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=80'
+        ],
+        floorplan: 'https://placehold.co/700x400?text=Floor+Plan'
     },
 
     // South Yarra Properties
@@ -55,7 +145,14 @@ const propertyDatabase = [
         parking: 1,
         features: ['Waterfront', 'Balcony', 'Gym'],
         tags: ['waterfront', 'luxury', 'apartment'],
-        proximity: { schools: 1.5, transport: 0.2, shops: 0.1, parks: 0.8 }
+        proximity: { schools: 1.5, transport: 0.2, shops: 0.1, parks: 0.8 },
+        image: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80',
+        images: [
+            'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=700&q=80'
+        ],
+        floorplan: 'https://placehold.co/700x400?text=Floor+Plan'
     },
     {
         id: 4,
@@ -71,7 +168,14 @@ const propertyDatabase = [
         parking: 1,
         features: ['Heritage', 'Garden', 'Fireplace'],
         tags: ['heritage', 'luxury', 'prestigious'],
-        proximity: { schools: 1.2, transport: 0.3, shops: 0.2, parks: 0.7 }
+        proximity: { schools: 1.2, transport: 0.3, shops: 0.2, parks: 0.7 },
+        image: 'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=600&q=80',
+        images: [
+            'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=700&q=80'
+        ],
+        floorplan: 'https://placehold.co/700x400?text=Floor+Plan'
     },
 
     // Glen Waverley Properties
@@ -89,7 +193,14 @@ const propertyDatabase = [
         parking: 2,
         features: ['Pool', 'Garden', 'Study'],
         tags: ['family', 'suburban', 'pool'],
-        proximity: { schools: 1.1, transport: 1.8, shops: 0.9, parks: 1.3 }
+        proximity: { schools: 1.1, transport: 1.8, shops: 0.9, parks: 1.3 },
+        image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80',
+        images: [
+            'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=700&q=80'
+        ],
+        floorplan: 'https://placehold.co/700x400?text=Floor+Plan'
     },
     {
         id: 6,
@@ -105,7 +216,14 @@ const propertyDatabase = [
         parking: 1,
         features: ['Modern Kitchen', 'Balcony', 'Gym'],
         tags: ['modern', 'apartment', 'convenient'],
-        proximity: { schools: 0.8, transport: 1.5, shops: 0.3, parks: 1.0 }
+        proximity: { schools: 0.8, transport: 1.5, shops: 0.3, parks: 1.0 },
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+        images: [
+            'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=700&q=80',
+            'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=700&q=80'
+        ],
+        floorplan: 'https://placehold.co/700x400?text=Floor+Plan'
     },
 
     // Melbourne CBD Properties
@@ -1610,9 +1728,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Search Tabs Functionality ---
     const searchTabs = document.querySelectorAll('.search-tab');
-    const standardSearch = document.getElementById('standard-search');
-    const aiSearch = document.getElementById('ai-search');
-    const aiSuggestions = document.getElementById('ai-suggestions');
+    const searchBar = document.querySelector('.search-bar');
+    const searchInput = document.querySelector('.search-input');
+    const aiPanel = document.getElementById('ai-search-panel');
+    // Fix: define these variables so they are not undefined
     const buyPropertyTypes = document.getElementById('buy-property-types');
     const rentPropertyTypes = document.getElementById('rent-property-types');
 
@@ -1620,22 +1739,19 @@ document.addEventListener('DOMContentLoaded', function() {
         tab.addEventListener('click', function() {
             // Remove active class from all tabs
             searchTabs.forEach(t => t.classList.remove('active'));
-            
             // Add active class to clicked tab
             this.classList.add('active');
-            
             const tabType = this.getAttribute('data-tab');
-            
-            // Update search input placeholder based on tab
-            const searchInput = document.querySelector('.search-input');
+            // Update search input placeholder and show/hide bar
             if (searchInput) {
                 if (tabType === 'ai') {
-                    searchInput.placeholder = "Tell me what you're after";
+                    searchInput.placeholder = "Type in what you're after";
+                    if (searchBar) searchBar.style.display = 'flex';
                 } else {
                     searchInput.placeholder = 'Search suburb, postcode or state';
+                    if (searchBar) searchBar.style.display = 'flex';
                 }
             }
-            
             // Handle property type display for buy/rent tabs
             if (tabType === 'buy') {
                 if (buyPropertyTypes) buyPropertyTypes.style.display = 'grid';
@@ -1644,7 +1760,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (buyPropertyTypes) buyPropertyTypes.style.display = 'none';
                 if (rentPropertyTypes) rentPropertyTypes.style.display = 'grid';
             }
-            
             // Show appropriate message for other tabs
             if (tabType === 'sold' || tabType === 'address' || tabType === 'agents') {
                 showToast(`${tabType.charAt(0).toUpperCase() + tabType.slice(1)} search coming soon!`, 'info');
@@ -1705,7 +1820,103 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // --- AI Mortgage Broker Chatbox ---
+    const aiChatbotToggle = document.getElementById('ai-chatbot-toggle');
+    const aiChatbotEmbedded = document.getElementById('ai-chatbot-embedded');
+    const aiChatbotInputForm = document.getElementById('ai-chatbot-input-form');
+    const aiChatbotInput = document.getElementById('ai-chatbot-input');
+    const chatMessages = aiChatbotEmbedded ? aiChatbotEmbedded.querySelector('.chat-messages') : null;
+
+    if (aiChatbotToggle && aiChatbotEmbedded) {
+        aiChatbotToggle.addEventListener('click', function() {
+            aiChatbotEmbedded.style.display = aiChatbotEmbedded.style.display === 'none' ? 'block' : 'none';
+            if (aiChatbotEmbedded.style.display === 'block' && aiChatbotInput) {
+                aiChatbotInput.focus();
+            }
+        });
+    }
+
+    if (aiChatbotInputForm && aiChatbotInput && chatMessages) {
+        aiChatbotInputForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userMsg = aiChatbotInput.value.trim();
+            if (!userMsg) return;
+            // Add user message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user';
+            userDiv.innerHTML = `<div class="message-content">${userMsg}</div>`;
+            chatMessages.appendChild(userDiv);
+            aiChatbotInput.value = '';
+            // Simulate AI response
+            setTimeout(() => {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'message bot';
+                botDiv.innerHTML = `<div class="message-content">I'm an AI mortgage broker. (Demo) I received: "${userMsg}"</div>`;
+                chatMessages.appendChild(botDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 800);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+    }
+
+    // Attach event listeners to search-tab buttons
+    let navTabs = document.querySelectorAll('.search-tab');
+    navTabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            let tabName = tab.getAttribute('data-tab');
+            console.log('Navigation tab clicked:', tabName);
+            // Optionally, you can call switchTab(tabName) if you want tab switching
+        });
+    });
+
+    const aiSearchForm = document.getElementById('ai-search-form');
+    if (aiSearchForm) {
+        aiSearchForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const query = document.getElementById('ai-search-input').value.trim();
+            if (query) {
+                // Redirect to search results page with the query
+                window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+            }
+        });
+    }
+
+    // Animate sections and cards on scroll
+    const fadeEls = document.querySelectorAll('section, .property-card, .hero, .ai-search-module');
+    const observer = new window.IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-slide-in');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    fadeEls.forEach(el => {
+        el.classList.remove('fade-slide-in');
+        observer.observe(el);
+    });
+
+    // Animate search button on click
+    const searchBtn = document.querySelector('.ai-search-btn');
+    if (searchBtn) {
+        searchBtn.addEventListener('mousedown', () => {
+            searchBtn.style.transform = 'scale(0.97)';
+        });
+        searchBtn.addEventListener('mouseup', () => {
+            searchBtn.style.transform = '';
+        });
+        searchBtn.addEventListener('mouseleave', () => {
+            searchBtn.style.transform = '';
+        });
+    }
 });
+
+async function runAISearch(query) {
+    // Dummy async function for AI search
+    console.log('AI Search query:', query);
+    // You can add loading states or results rendering here
+}
 
 // Enhanced search function
 function performSearch(searchType, filters) {
@@ -2447,14 +2658,17 @@ function initFilters() {
     if (filterToggle) {
         filterToggle.addEventListener('click', () => {
             filterModal.style.display = 'flex';
-            setTimeout(() => filterModal.classList.add('open'), 10);
+            lockScroll();
+            requestAnimationFrame(() => {
+                filterModal.classList.add('open');
+            });
         });
     }
     
     if (filterClose) {
         filterClose.addEventListener('click', () => {
-            filterModal.classList.remove('open');
-            setTimeout(() => filterModal.style.display = 'none', 300);
+            closeFilterModal();
+            unlockScroll();
         });
     }
 }
@@ -2522,28 +2736,236 @@ function toggleSaveProperty(button, propertyAddress) {
     }
 }
 
-function showPropertyDetails(propertyAddress) {
-    showToast(`Loading details for ${propertyAddress}...`, 'success');
+// --- Replace showPropertyDetailsModal with ultra-modern modal ---
+function showPropertyDetailsModal(propertyId) {
+    const property = propertyDatabase.find(p => p.id === propertyId);
+    if (!property) return;
     
-    // Simulate property details page
-    setTimeout(() => {
-        const propertyDetails = `
-            <div style="padding: 2rem; text-align: center; max-width: 800px; margin: 0 auto;">
-                <h1>${propertyAddress}</h1>
-                <div style="background: #f8f9fa; padding: 2rem; border-radius: 1rem; margin: 2rem 0;">
-                    <h3>Property Details</h3>
-                    <p>• 4 bedrooms, 3 bathrooms</p>
-                    <p>• 2 car spaces</p>
-                    <p>• Modern kitchen with stone benchtops</p>
-                    <p>• Large backyard with garden</p>
-                    <p>• Close to schools and transport</p>
+    // --- Define all required variables for modal content ---
+    // Features
+    const features = property.features && property.features.length
+        ? property.features.map(f => `<span style='background:#f2f2f7;color:#636E72;padding:6px 14px;border-radius:16px;font-size:13px;margin:2px;display:inline-block;'>${f}</span>`).join(' ')
+        : '';
+    // Tags
+    const tags = property.tags && property.tags.length
+        ? property.tags.map(t => `<span style='background:#6366f1;color:#fff;padding:6px 14px;border-radius:16px;font-size:13px;margin:2px;display:inline-block;'>${t}</span>`).join(' ')
+        : '';
+    // Proximity
+    const proximity = property.proximity ? `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1.5rem;font-size:1rem;margin-bottom:1.2rem;">
+            <div>🏫 Schools: <b>${property.proximity.schools}km</b></div>
+            <div>🚌 Transport: <b>${property.proximity.transport}km</b></div>
+            <div>🛒 Shops: <b>${property.proximity.shops}km</b></div>
+            <div>🌳 Parks: <b>${property.proximity.parks}km</b></div>
+        </div>
+    ` : '';
+    // Agent card
+    const agentCard = `
+        <div style="background: #f8f9fa; border-radius: 1rem; padding: 1.2rem; box-shadow: 0 2px 8px rgba(99,102,241,0.08); display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.2rem;">
+            <div style="background: #6366f1; color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">${property.agent ? property.agent[0] : '?'}</div>
+            <div style="flex:1;">
+                <div style="font-weight: 600; color: #1C1C1E;">${property.agent || 'N/A'}</div>
+                <div style="font-size: 0.95rem; color: #636E72;">${property.agentEmail || ''}</div>
+                <div style="font-size: 0.95rem; color: #636E72;">${property.agentPhone || ''}</div>
+            </div>
+            <button id="contact-agent-btn" class="btn-enhanced" style="background: #6366f1; color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1.2rem; font-weight: 600; cursor: pointer;">Contact Agent</button>
+        </div>
+    `;
+    // Schedule Viewing form
+    const scheduleForm = `
+        <form id="schedule-viewing-form" style="margin-top:1.5rem;display:flex;flex-direction:column;gap:0.8rem;">
+            <div style="font-weight:600;font-size:1.1rem;">Schedule a Viewing</div>
+            <input type="text" name="name" placeholder="Your Name" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
+            <input type="email" name="email" placeholder="Your Email" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
+            <input type="tel" name="phone" placeholder="Your Phone" style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
+            <input type="datetime-local" name="datetime" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
+            <button type="submit" class="btn-enhanced" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:0.7rem 1.2rem;font-weight:600;font-size:1rem;">Request Viewing</button>
+        </form>
+    `;
+    // Contact Agent form (hidden by default)
+    const contactForm = `
+        <form id="contact-agent-form" style="display:none;flex-direction:column;gap:0.8rem;margin-top:1.5rem;">
+            <div style="font-weight:600;font-size:1.1rem;">Contact Agent</div>
+            <input type="text" name="name" placeholder="Your Name" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
+            <input type="email" name="email" placeholder="Your Email" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
+            <textarea name="message" placeholder="Your Message" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;min-height:80px;"></textarea>
+            <button type="submit" class="btn-enhanced" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:0.7rem 1.2rem;font-weight:600;font-size:1rem;">Send Message</button>
+            <button type="button" id="cancel-contact-agent" style="background:none;color:#6366f1;border:none;font-weight:600;margin-top:0.5rem;">Cancel</button>
+        </form>
+    `;
+
+    // Modal overlay
+    let modal = document.getElementById('property-details-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'property-details-modal';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100vw';
+        modal.style.height = '100vh';
+        modal.style.background = 'rgba(30,32,44,0.75)';
+        modal.style.display = 'flex';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.zIndex = '9999';
+        modal.style.transition = 'background 0.3s cubic-bezier(0.4,0,0.2,1)';
+        // Make modal content scrollable
+        modal.innerHTML = '<div class="property-details-modal-content" style="max-height:90vh;overflow-y:auto;width:100%;position:relative;"></div>';
+        document.body.appendChild(modal);
+    }
+    const content = modal.querySelector('.property-details-modal-content');
+    content.style.background = '#fff';
+    content.style.borderRadius = '1.5rem';
+    content.style.maxWidth = 'min(96vw, 700px)';
+    content.style.width = '100%';
+    content.style.padding = '0';
+    content.style.position = 'relative';
+    content.style.boxShadow = '0 8px 32px rgba(99,102,241,0.18)';
+    content.style.overflowY = 'auto';
+    content.style.maxHeight = '90vh';
+    content.style.animation = 'fadeInScale 0.35s cubic-bezier(0.4,0,0.2,1)';
+    
+    // --- Image Carousel ---
+    let images = property.images && property.images.length ? property.images : [property.image].filter(Boolean);
+    if (!images.length) {
+        images = ['https://placehold.co/700x400?text=No+Photos'];
+    }
+    let carouselHtml = '';
+    if (images.length > 1) {
+        carouselHtml = `
+            <div class="carousel" style="position:relative;width:100%;height:260px;overflow:hidden;background:#f2f2f7;">
+                <button class="carousel-arrow left" style="position:absolute;top:50%;left:1rem;transform:translateY(-50%);background:rgba(255,255,255,0.8);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;z-index:2;font-size:1.5rem;cursor:pointer;">&#8592;</button>
+                <img class="carousel-img" src="${images[0]}" alt="Property photo" style="width:100%;height:100%;object-fit:cover;object-position:center;transition:opacity 0.3s;">
+                <button class="carousel-arrow right" style="position:absolute;top:50%;right:1rem;transform:translateY(-50%);background:rgba(255,255,255,0.8);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;z-index:2;font-size:1.5rem;cursor:pointer;">&#8594;</button>
+                <div class="carousel-dots" style="position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:0.5rem;">
+                    ${images.map((_,i)=>`<span class="carousel-dot" style="width:10px;height:10px;border-radius:50%;background:${i===0?'#6366f1':'#e0e0e0'};display:inline-block;"></span>`).join('')}
                 </div>
-                <button onclick="window.history.back()" style="background: var(--primary-color); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 0.5rem; cursor: pointer;">Back to Search</button>
             </div>
         `;
-        
-        document.body.innerHTML = propertyDetails;
-    }, 1000);
+    } else {
+        carouselHtml = `<div style="width:100%;height:260px;background:#f2f2f7;position:relative;overflow:hidden;"><img src="${images[0]}" alt="Property photo" style="width:100%;height:100%;object-fit:cover;object-position:center;"><button id="close-property-details-modal" aria-label="Close" style="position:absolute;top:1.2rem;right:1.2rem;font-size:2rem;background:rgba(255,255,255,0.85);border:none;cursor:pointer;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(99,102,241,0.08);transition:background 0.2s;">&times;</button></div>`;
+    }
+
+    // --- Google Map Embed ---
+    let mapHtml = '';
+    if (property.coordinates && property.coordinates.lat && property.coordinates.lng) {
+        const lat = property.coordinates.lat;
+        const lng = property.coordinates.lng;
+        const mapSrc = `https://www.google.com/maps?q=${lat},${lng}&hl=en&z=16&output=embed`;
+        mapHtml = `<div style="margin:1.5rem 0 0.5rem 0;text-align:center;"><iframe src="${mapSrc}" width="100%" height="220" style="border-radius:1rem;border:none;box-shadow:0 2px 8px rgba(99,102,241,0.08);max-width:100%;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>`;
+    } else {
+        mapHtml = `<div style="margin:1.5rem 0 0.5rem 0;text-align:center;"><div style='width:100%;height:220px;display:flex;align-items:center;justify-content:center;background:#f2f2f7;border-radius:1rem;box-shadow:0 2px 8px rgba(99,102,241,0.08);color:#636E72;'>No Map Available</div></div>`;
+    }
+
+    // Main content
+    content.innerHTML = `
+        ${carouselHtml}
+        <button id="close-property-details-modal" aria-label="Close" style="position:absolute;top:1.2rem;right:1.2rem;font-size:2rem;background:rgba(255,255,255,0.85);border:none;cursor:pointer;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(99,102,241,0.08);transition:background 0.2s;z-index:10;">&times;</button>
+        <div style="padding:2rem;">
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+                <span style="background:#6366f1;color:#fff;padding:6px 18px;border-radius:16px;font-size:1rem;font-weight:600;">${property.status}</span>
+                <span style="font-size:1.3rem;font-weight:700;color:#1C1C1E;">${property.status === 'For Rent' ? `$${property.price}/week` : `$${property.price.toLocaleString()}`}</span>
+            </div>
+            <h2 style="margin:0 0 0.5rem 0;font-size:2rem;font-family:'Outfit',sans-serif;">${property.title}</h2>
+            <div style="color:#636E72;font-size:1.1rem;margin-bottom:1.2rem;">${property.suburb}, ${property.location}</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem 1.2rem;margin-bottom:1.2rem;">
+                <div><b>${property.beds}</b> <span style="color:#636E72;">Beds</span></div>
+                <div><b>${property.baths}</b> <span style="color:#636E72;">Baths</span></div>
+                <div><b>${property.parking}</b> <span style="color:#636E72;">Car</span></div>
+            </div>
+            <div style="margin-bottom:1.2rem;">${features}</div>
+            <div style="margin-bottom:1.2rem;">${tags}</div>
+            <div style="margin-bottom:1.2rem;">${property.description ? property.description : ''}</div>
+            ${proximity}
+            ${mapHtml}
+            ${agentCard}
+            <div id="modal-forms">
+                ${scheduleForm}
+                ${contactForm}
+            </div>
+        </div>
+    `;
+
+    // Carousel logic
+    if (images.length > 1) {
+        let current = 0;
+        const imgEl = content.querySelector('.carousel-img');
+        const leftBtn = content.querySelector('.carousel-arrow.left');
+        const rightBtn = content.querySelector('.carousel-arrow.right');
+        const dots = content.querySelectorAll('.carousel-dot');
+        function updateCarousel(idx) {
+            imgEl.src = images[idx];
+            dots.forEach((dot, i) => {
+                dot.style.background = i === idx ? '#6366f1' : '#e0e0e0';
+            });
+        }
+        leftBtn.onclick = (e) => {
+            e.stopPropagation();
+            current = (current - 1 + images.length) % images.length;
+            updateCarousel(current);
+        };
+        rightBtn.onclick = (e) => {
+            e.stopPropagation();
+            current = (current + 1) % images.length;
+            updateCarousel(current);
+        };
+        dots.forEach((dot, i) => {
+            dot.onclick = (e) => {
+                e.stopPropagation();
+                current = i;
+                updateCarousel(current);
+            };
+        });
+    }
+
+    // Animate modal open
+    modal.style.display = 'flex';
+    modal.style.opacity = '0';
+    setTimeout(() => { modal.style.opacity = '1'; }, 10);
+    document.body.style.overflow = 'hidden';
+    // Close modal
+    document.getElementById('close-property-details-modal').onclick = function() {
+        modal.style.opacity = '0';
+        setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 250);
+    };
+    modal.onclick = function(e) {
+        if (e.target === modal) {
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = ''; }, 250);
+        }
+    };
+    // Contact Agent button
+    const contactBtn = content.querySelector('#contact-agent-btn');
+    const contactFormEl = content.querySelector('#contact-agent-form');
+    const scheduleFormEl = content.querySelector('#schedule-viewing-form');
+    if (contactBtn && contactFormEl && scheduleFormEl) {
+        contactBtn.onclick = function() {
+            contactFormEl.style.display = 'flex';
+            scheduleFormEl.style.display = 'none';
+        };
+        contactFormEl.querySelector('#cancel-contact-agent').onclick = function() {
+            contactFormEl.style.display = 'none';
+            scheduleFormEl.style.display = 'flex';
+        };
+        contactFormEl.onsubmit = function(e) {
+            e.preventDefault();
+            showToast('Message sent to agent!', 'success');
+            contactFormEl.reset();
+            contactFormEl.style.display = 'none';
+            scheduleFormEl.style.display = 'flex';
+        };
+    }
+    // Schedule Viewing form submit
+    if (scheduleFormEl) {
+        scheduleFormEl.onsubmit = function(e) {
+            e.preventDefault();
+            showToast('Viewing request sent!', 'success');
+            scheduleFormEl.reset();
+        };
+    }
 }
 
 // Toast Notifications
@@ -3009,490 +3431,268 @@ function toggleSaveProperty(button, propertyAddress) {
     }, 600);
 }
 
-// Enhanced property details
-function showPropertyDetails(propertyAddress) {
-    showToast(`Loading details for ${propertyAddress}...`, 'success');
-    
-    // Simulate loading state
-    setTimeout(() => {
-        const propertyDetails = `
-            <div style="padding: 2rem; text-align: center; max-width: 800px; margin: 0 auto;">
-                <h1>${propertyAddress}</h1>
-                <div style="background: #f8f9fa; padding: 2rem; border-radius: 1rem; margin: 2rem 0;">
-                    <h3>Property Details</h3>
-                    <p>• 4 bedrooms, 3 bathrooms</p>
-                    <p>• 2 car spaces</p>
-                    <p>• Modern kitchen with stone benchtops</p>
-                    <p>• Large backyard with garden</p>
-                    <p>• Close to schools and transport</p>
+// --- Patch displayProperties to wire up details modal ---
+function displayProperties(properties) {
+    const recommendCards = document.querySelector('.recommend-cards');
+    if (!recommendCards) return;
+    recommendCards.innerHTML = '';
+    // Only show the first 6 properties
+    properties.slice(0, 6).forEach(property => {
+        // Use property.image or property.images[0] if available, else fallback
+        let imgUrl = property.image || (property.images && property.images[0]);
+        if (!imgUrl) {
+            imgUrl = `https://source.unsplash.com/600x400/?house,home,${encodeURIComponent(property.suburb)}`;
+        }
+        const card = document.createElement('div');
+        card.className = 'property-card';
+        card.innerHTML = `
+            <button class="property-save-btn" title="Save property" onclick="toggleSaveProperty(this, '${property.title.replace(/'/g, "\\'")}')">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </button>
+            <div class="property-img" style="background-image: url('${imgUrl}');"></div>
+            <div class="property-card-body">
+                <div class="property-tags">
+                    <span class="property-tag property-tag-enhanced">${property.status}</span>
                 </div>
-                <button onclick="window.history.back()" style="background: var(--primary-color); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 0.5rem; cursor: pointer;">Back to Search</button>
+                <h3 class="property-address">${property.title}</h3>
+                <div class="property-price">${property.status === 'For Rent' ? `$${property.price}/week` : `$${property.price.toLocaleString()}`}</div>
+                <button class="property-details-btn btn-enhanced" data-property-id="${property.id}">View Details</button>
             </div>
         `;
-        
-        document.body.innerHTML = propertyDetails;
-    }, 1000);
-}
-
-// Enhanced Toast Notifications with better UX
-function showToast(message, type = 'success') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast toast-enhanced ${type}`;
-    toast.textContent = message;
-    
-    // Add progress bar
-    const progressBar = document.createElement('div');
-    progressBar.style.cssText = `
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 3px;
-        background: ${type === 'success' ? '#34C759' : '#FF3B30'};
-        width: 100%;
-        transform-origin: left;
-        animation: toastProgress 3s linear;
-    `;
-    toast.appendChild(progressBar);
-    
-    container.appendChild(toast);
-    
-    // Show toast with enhanced animation
-    requestAnimationFrame(() => {
-        toast.classList.add('show');
+        // Always open modal on card or button click
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.property-save-btn')) return;
+            showPropertyDetailsModal(property.id);
+        });
+        card.querySelector('.property-details-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            showPropertyDetailsModal(property.id);
+        });
+        recommendCards.appendChild(card);
     });
-    
-    // Remove toast after 3 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }, 3000);
-}
-
-// Enhanced Newsletter Subscription
-function subscribeNewsletter() {
-    const emailInput = document.querySelector('.newsletter-input input');
-    const email = emailInput.value.trim();
-    
-    if (!email) {
-        showToast('Please enter your email address', 'error');
-        return;
-    }
-    
-    if (!isValidEmail(email)) {
-        showToast('Please enter a valid email address', 'error');
-        return;
-    }
-    
-    // Simulate subscription
-    showToast('Thank you for subscribing! You\'ll receive updates soon.', 'success');
-    emailInput.value = '';
-}
-
-// Email validation helper
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-// Enhanced search functionality
-function handleSearch() {
-    const searchInput = document.querySelector('.search-input');
-    const query = searchInput ? searchInput.value.trim() : '';
-    
-    if (!query) {
-        showToast('Please enter a location to search', 'error');
-        return;
-    }
-    
-    // Add loading state
-    const searchBtn = document.querySelector('.search-submit-btn');
-    const originalText = searchBtn.textContent;
-    searchBtn.textContent = 'Searching...';
-    searchBtn.disabled = true;
-    
-    // Simulate search redirect
-    showToast(`Searching for properties in ${query}...`, 'success');
-    
-    // Create a simple search results page simulation
-    setTimeout(() => {
-        const searchResults = `
-            <div style="padding: 2rem; text-align: center; max-width: 800px; margin: 0 auto;">
-                <h1>Search Results for "${query}"</h1>
-                <p>Found 24 properties in ${query}</p>
-                <div style="background: #f8f9fa; padding: 2rem; border-radius: 1rem; margin: 2rem 0;">
-                    <h3>Sample Properties</h3>
-                    <p>• 3-bedroom house - $850,000</p>
-                    <p>• 2-bedroom apartment - $650,000</p>
-                    <p>• 4-bedroom family home - $1,200,000</p>
-                </div>
-                <button onclick="window.history.back()" style="background: var(--primary-color); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 0.5rem; cursor: pointer;">Back to Home</button>
-            </div>
-        `;
-        
-        document.body.innerHTML = searchResults;
-    }, 1000);
-}
-
-// Enhanced AI Search functionality
-function handleAISearch() {
-    const aiInput = document.querySelector('.ai-input');
-    const query = aiInput ? aiInput.value.trim() : '';
-    
-    if (!query) {
-        showToast('Please enter your question for the AI broker', 'error');
-        return;
-    }
-    
-    // Add loading state
-    const aiBtn = document.querySelector('.ai-search-btn');
-    const originalText = aiBtn.textContent;
-    aiBtn.textContent = 'Processing...';
-    aiBtn.disabled = true;
-    
-    showToast('AI broker is analyzing your request...', 'success');
-    
-    // Simulate AI processing
-    setTimeout(() => {
-        showToast('AI response: Based on your criteria, I recommend properties in the $800k-$1.2M range with 3+ bedrooms.', 'success');
-        
-        // Reset button
-        aiBtn.textContent = originalText;
-        aiBtn.disabled = false;
-    }, 2000);
 }
 
 // Tab switching functionality
 function switchTab(tabName) {
     const tabs = document.querySelectorAll('.search-tab');
     const searchBar = document.querySelector('.search-bar');
+    const searchInput = document.querySelector('.search-input');
     const aiPanel = document.getElementById('ai-search-panel');
     
     // Remove active class from all tabs
     tabs.forEach(tab => tab.classList.remove('active'));
     
     // Add active class to clicked tab
-    const activeTab = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+    const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
     if (activeTab) {
         activeTab.classList.add('active');
     }
     
     // Show/hide appropriate content
     if (tabName === 'ai') {
+        if (searchInput) searchInput.placeholder = "Type in what you're after";
         searchBar.style.display = 'none';
-        aiPanel.style.display = 'block';
+        if (aiPanel) aiPanel.style.display = 'block';
     } else {
+        if (searchInput) searchInput.placeholder = 'Search suburb, postcode or state';
         searchBar.style.display = 'flex';
-        aiPanel.style.display = 'none';
+        if (aiPanel) aiPanel.style.display = 'none';
     }
 }
 
-// Add CSS for toast progress bar
+// Social Login Handler
+function handleSocialLogin(provider) {
+    // Show loading state
+    const button = event.target.closest('.social-login-btn');
+    const originalText = button.innerHTML;
+    button.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="width: 16px; height: 16px; border: 2px solid #ccc; border-top: 2px solid #147aff; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            Connecting...
+        </div>
+    `;
+    button.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+        // Reset button
+        button.innerHTML = originalText;
+        button.disabled = false;
+        
+        // Show success message
+        showToast(`Successfully connected with ${provider}!`, 'success');
+        
+        // Close modal after a short delay
+        setTimeout(() => {
+            closeJoinModal();
+        }, 1500);
+    }, 2000);
+}
+
+// Add CSS for loading spinner
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes toastProgress {
-        from { transform: scaleX(1); }
-        to { transform: scaleX(0); }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 `;
 document.head.appendChild(style);
 
-// Authentication handlers
-function handleSignIn() {
-    showToast('Sign In feature coming soon!', 'info');
-}
+// Dropdown Panel and Modal Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize dropdown panels
+    initDropdownPanels();
+    
+    // Initialize modal popups
+    initModalPopups();
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        closeAllDropdowns(event);
+    });
+});
 
-function handleJoin() {
-    openJoinModal();
-}
-
-// Instant Offer Form Functionality
-function initInstantOfferForm() {
-    const form = document.getElementById('instant-offer-form');
-    if (form) {
-        form.addEventListener('submit', handleInstantOfferSubmit);
-    }
-}
-
-function handleInstantOfferSubmit(e) {
-    e.preventDefault();
+function initDropdownPanels() {
+    const dropdownButtons = document.querySelectorAll('.search-tab-container .search-tab');
     
-    // Get form data
-    const formData = new FormData(e.target);
-    const propertyAddress = formData.get('property-address') || document.getElementById('property-address').value;
-    const propertyType = formData.get('property-type') || document.getElementById('property-type').value;
-    const bedrooms = formData.get('bedrooms') || document.getElementById('bedrooms').value;
-    const bathrooms = formData.get('bathrooms') || document.getElementById('bathrooms').value;
-    const estimatedValue = formData.get('estimated-value') || document.getElementById('estimated-value').value;
-    const propertySize = formData.get('property-size') || document.getElementById('property-size').value;
-    
-    // Basic validation
-    if (!propertyAddress || !propertyType || !bedrooms || !bathrooms || !estimatedValue) {
-        showToast('Please fill in all required fields', 'error');
-        return;
-    }
-    
-    // Show loading state
-    const submitBtn = e.target.querySelector('.instant-offer-btn');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Processing...';
-    submitBtn.disabled = true;
-    
-    // Simulate API call delay
-    setTimeout(() => {
-        // Reset button
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-        
-        // Show confirmation modal
-        showInstantOfferConfirmation({
-            propertyAddress,
-            propertyType,
-            bedrooms,
-            bathrooms,
-            estimatedValue,
-            propertySize
+    dropdownButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation();
+            const tabName = this.getAttribute('data-tab');
+            const dropdown = document.getElementById(tabName + '-dropdown');
+            
+            if (dropdown) {
+                // Close all other dropdowns
+                closeAllDropdowns();
+                
+                // Toggle current dropdown
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                } else {
+                    dropdown.classList.add('show');
+                }
+                
+                console.log('Dropdown toggled:', tabName);
+            }
         });
-        
-        // Reset form
-        e.target.reset();
-        
+    });
+}
+
+function closeAllDropdowns(event) {
+    const dropdowns = document.querySelectorAll('.dropdown-panel');
+    dropdowns.forEach(dropdown => {
+        dropdown.classList.remove('show');
+    });
+}
+
+function initModalPopups() {
+    // Sign In button
+    const signinBtn = document.querySelector('.signin-btn');
+    if (signinBtn) {
+        signinBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            openModal('signin-modal-overlay');
+        });
+    }
+    
+    // Join button
+    const joinBtn = document.querySelector('.join-btn');
+    if (joinBtn) {
+        joinBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            openModal('join-modal-overlay');
+        });
+    }
+    
+    // Close modals when clicking outside
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            closeModal(event.target.id);
+        }
+    });
+    
+    // Handle form submissions
+    const signinForm = document.getElementById('signin-form');
+    if (signinForm) {
+        signinForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            handleSignInSubmit();
+        });
+    }
+    
+    const joinForm = document.getElementById('join-form');
+    if (joinForm) {
+        joinForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            handleJoinSubmit();
+        });
+    }
+}
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        console.log('Modal opened:', modalId);
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; // Restore scrolling
+        console.log('Modal closed:', modalId);
+    }
+}
+
+function switchModal(fromModalId, toModalId) {
+    closeModal(fromModalId);
+    setTimeout(() => {
+        openModal(toModalId);
+    }, 300);
+}
+
+function handleSignInSubmit() {
+    const email = document.getElementById('signin-email').value;
+    const password = document.getElementById('signin-password').value;
+    
+    console.log('Sign in attempt:', { email, password });
+    
+    // Simulate sign in process
+    showToast('Signing you in...', 'success');
+    
+    setTimeout(() => {
+        closeModal('signin-modal-overlay');
+        showToast('Successfully signed in!', 'success');
     }, 1500);
 }
 
-function showInstantOfferConfirmation(data) {
-    // Create modal HTML
-    const modalHTML = `
-        <div id="instant-offer-confirmation-modal" class="instant-offer-modal modal-enhanced" style="display: none;">
-            <div class="instant-offer-modal-content modal-content-enhanced">
-                <div class="confirmation-header">
-                    <div class="confirmation-icon">
-                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="30" cy="30" r="25" fill="#34C759" opacity="0.1"/>
-                            <path d="M20 30L27 37L40 24" stroke="#34C759" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <h3>Thank You!</h3>
-                    <p>Our team will review your home and get back to you shortly.</p>
-                </div>
-                
-                <div class="confirmation-details">
-                    <h4>Property Details Submitted:</h4>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Address:</span>
-                            <span class="detail-value">${data.propertyAddress}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Type:</span>
-                            <span class="detail-value">${data.propertyType}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Bedrooms:</span>
-                            <span class="detail-value">${data.bedrooms}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Bathrooms:</span>
-                            <span class="detail-value">${data.bathrooms}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Estimated Value:</span>
-                            <span class="detail-value">$${parseInt(data.estimatedValue).toLocaleString()}</span>
-                        </div>
-                        ${data.propertySize ? `
-                        <div class="detail-item">
-                            <span class="detail-label">Property Size:</span>
-                            <span class="detail-value">${data.propertySize} m²</span>
-                        </div>
-                        ` : ''}
-                    </div>
-                </div>
-                
-                <div class="confirmation-footer">
-                    <p>We'll contact you within 24 hours with your instant offer.</p>
-                    <button class="confirmation-close-btn btn-enhanced" onclick="closeInstantOfferConfirmation()">Close</button>
-                </div>
-            </div>
-        </div>
-    `;
+function handleJoinSubmit() {
+    const fullname = document.getElementById('join-fullname').value;
+    const email = document.getElementById('join-email').value;
+    const password = document.getElementById('join-password').value;
     
-    // Add modal to body if it doesn't exist
-    if (!document.getElementById('instant-offer-confirmation-modal')) {
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-    }
+    console.log('Join attempt:', { fullname, email, password });
     
-    // Show modal
-    const modal = document.getElementById('instant-offer-confirmation-modal');
-    modal.style.display = 'flex';
+    // Simulate account creation
+    showToast('Creating your account...', 'success');
     
-    // Add show class for animation
     setTimeout(() => {
-        modal.classList.add('show');
-    }, 10);
+        closeModal('join-modal-overlay');
+        showToast('Account created successfully!', 'success');
+    }, 1500);
 }
 
-function closeInstantOfferConfirmation() {
-    const modal = document.getElementById('instant-offer-confirmation-modal');
-    if (modal) {
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 300);
-    }
+// Update existing functions to use new modal system
+function handleSignIn() {
+    openModal('signin-modal-overlay');
 }
 
-// Initialize Instant Offer form when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    initInstantOfferForm();
-    
-    // Close modal when clicking outside
-    document.addEventListener('click', function(e) {
-        const modal = document.getElementById('instant-offer-confirmation-modal');
-        if (modal && e.target === modal) {
-            closeInstantOfferConfirmation();
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeInstantOfferConfirmation();
-        }
-    });
-});
-
-// --- Instant Offer Modal Logic ---
-document.addEventListener('DOMContentLoaded', function() {
-  const sellTab = document.getElementById('sell-tab');
-  const modal = document.getElementById('instant-offer-modal');
-  const modalContent = document.querySelector('.instant-offer-modal-content');
-  const closeBtn = document.getElementById('instant-offer-modal-close');
-  let lastFocusedElement = null;
-
-  function openModal() {
-    lastFocusedElement = document.activeElement;
-    modal.style.display = 'flex';
-    lockScroll();
-    // Focus first input
-    setTimeout(() => {
-      const firstInput = modal.querySelector('input, select, textarea, button');
-      if (firstInput) firstInput.focus();
-    }, 100);
-  }
-
-  function closeModal() {
-    modal.style.display = 'none';
-    unlockScroll();
-    if (lastFocusedElement) lastFocusedElement.focus();
-  }
-
-  // Open modal on Sell tab click
-  if (sellTab) {
-    sellTab.addEventListener('click', function(e) {
-      e.preventDefault();
-      openModal();
-    });
-  }
-
-  // Close modal on close button
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closeModal);
-  }
-
-  // Close modal on overlay click
-  if (modal) {
-    modal.addEventListener('mousedown', function(e) {
-      if (e.target === modal) {
-        closeModal();
-      }
-    });
-  }
-
-  // Close modal on Escape key
-  document.addEventListener('keydown', function(e) {
-    if (modal.style.display !== 'none' && (e.key === 'Escape' || e.key === 'Esc')) {
-      closeModal();
-    }
-  });
-
-  // Focus trap
-  if (modalContent) {
-    modalContent.addEventListener('keydown', function(e) {
-      if (e.key === 'Tab') {
-        const focusable = modalContent.querySelectorAll('input, select, textarea, button, [tabindex]:not([tabindex="-1"])');
-        const focusableArr = Array.prototype.slice.call(focusable);
-        const first = focusableArr[0];
-        const last = focusableArr[focusableArr.length - 1];
-        if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        } else if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      }
-    });
-  }
-});
-
-// --- AI Mortgage Chatbot Embedded Logic ---
-document.addEventListener('DOMContentLoaded', function() {
-  const chatToggle = document.getElementById('ai-chatbot-toggle');
-  const chatEmbedded = document.getElementById('ai-chatbot-embedded');
-  const chatInputForm = document.getElementById('ai-chatbot-input-form');
-  const chatInput = document.getElementById('ai-chatbot-input');
-  const chatMessages = chatEmbedded ? chatEmbedded.querySelector('.chat-messages') : null;
-
-  if (chatToggle && chatEmbedded) {
-    chatToggle.addEventListener('click', function() {
-      if (chatEmbedded.style.display === 'none' || chatEmbedded.style.display === '') {
-        chatEmbedded.style.display = 'block';
-        chatToggle.textContent = 'Close Chat';
-        chatInput && chatInput.focus();
-      } else {
-        chatEmbedded.style.display = 'none';
-        chatToggle.textContent = 'Chat Now';
-      }
-    });
-  }
-
-  if (chatInputForm && chatMessages) {
-    chatInputForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const userMsg = chatInput.value.trim();
-      if (!userMsg) return;
-      // Append user message
-      const userDiv = document.createElement('div');
-      userDiv.className = 'message user';
-      userDiv.innerHTML = `<div class="message-content">${userMsg}</div>`;
-      chatMessages.appendChild(userDiv);
-      chatInput.value = '';
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-      // Simulate bot response
-      setTimeout(() => {
-        const botDiv = document.createElement('div');
-        botDiv.className = 'message bot';
-        botDiv.innerHTML = `<div class="message-content">This is a sample response. (AI logic can be added here.)</div>`;
-        chatMessages.appendChild(botDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }, 600);
-    });
-  }
-});
-
-// --- Modal Scroll Lock Manager ---
-let openModalCount = 0;
-function lockScroll() {
-    openModalCount++;
-    document.body.style.overflow = 'hidden';
-}
-function unlockScroll() {
-    openModalCount = Math.max(0, openModalCount - 1);
-    if (openModalCount === 0) {
-        document.body.style.overflow = '';
-    }
+function handleJoin() {
+    openModal('join-modal-overlay');
 }
