@@ -1,0 +1,13 @@
+name: Reset GitHub Pages
+
+on:
+  push:
+    paths:
+      - ".github/workflows/pages-deploy-reset.yml"
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Do nothing
+        run: echo "Reset"
