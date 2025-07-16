@@ -78,6 +78,24 @@ document.addEventListener('DOMContentLoaded', function() {
         // Start typing effect after a delay
         setTimeout(typePlaceholder, 1000);
     }
+
+    const brokerHero = document.querySelector('.ai-broker-hero');
+    const startChatBtn = document.getElementById('ai-chatbot-toggle');
+    const closeChatBtn = document.getElementById('ai-chatbot-close');
+
+    if (startChatBtn && brokerHero) {
+        startChatBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            brokerHero.classList.add('chat-active');
+        });
+    }
+
+    // Use event delegation in case the close button is dynamically added
+    document.body.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'ai-chatbot-close') {
+            brokerHero.classList.remove('chat-active');
+        }
+    });
 });
 
 // Enhanced property database with coordinates and proximity data
@@ -2748,7 +2766,7 @@ function showPropertyDetailsModal(propertyId) {
         : '';
     // Tags
     const tags = property.tags && property.tags.length
-        ? property.tags.map(t => `<span style='background:#6366f1;color:#fff;padding:6px 14px;border-radius:16px;font-size:13px;margin:2px;display:inline-block;'>${t}</span>`).join(' ')
+        ? property.tags.map(t => `<span style='background:#007bff;color:#fff;padding:6px 14px;border-radius:16px;font-size:13px;margin:2px;display:inline-block;'>${t}</span>`).join(' ')
         : '';
     // Proximity
     const proximity = property.proximity ? `
@@ -2762,13 +2780,13 @@ function showPropertyDetailsModal(propertyId) {
     // Agent card
     const agentCard = `
         <div style="background: #f8f9fa; border-radius: 1rem; padding: 1.2rem; box-shadow: 0 2px 8px rgba(99,102,241,0.08); display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.2rem;">
-            <div style="background: #6366f1; color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">${property.agent ? property.agent[0] : '?'}</div>
+            <div style="background: #007bff; color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">${property.agent ? property.agent[0] : '?'}</div>
             <div style="flex:1;">
                 <div style="font-weight: 600; color: #1C1C1E;">${property.agent || 'N/A'}</div>
                 <div style="font-size: 0.95rem; color: #636E72;">${property.agentEmail || ''}</div>
                 <div style="font-size: 0.95rem; color: #636E72;">${property.agentPhone || ''}</div>
             </div>
-            <button id="contact-agent-btn" class="btn-enhanced" style="background: #6366f1; color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1.2rem; font-weight: 600; cursor: pointer;">Contact Agent</button>
+            <button id="contact-agent-btn" class="btn-enhanced" style="background: #007bff; color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1.2rem; font-weight: 600; cursor: pointer;">Contact Agent</button>
         </div>
     `;
     // Schedule Viewing form
@@ -2779,7 +2797,7 @@ function showPropertyDetailsModal(propertyId) {
             <input type="email" name="email" placeholder="Your Email" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
             <input type="tel" name="phone" placeholder="Your Phone" style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
             <input type="datetime-local" name="datetime" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
-            <button type="submit" class="btn-enhanced" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:0.7rem 1.2rem;font-weight:600;font-size:1rem;">Request Viewing</button>
+            <button type="submit" class="btn-enhanced" style="background:#007bff;color:#fff;border:none;border-radius:8px;padding:0.7rem 1.2rem;font-weight:600;font-size:1rem;">Request Viewing</button>
         </form>
     `;
     // Contact Agent form (hidden by default)
@@ -2789,8 +2807,8 @@ function showPropertyDetailsModal(propertyId) {
             <input type="text" name="name" placeholder="Your Name" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
             <input type="email" name="email" placeholder="Your Email" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;">
             <textarea name="message" placeholder="Your Message" required style="padding:0.7rem 1rem;border-radius:8px;border:1px solid #e5e7eb;font-size:1rem;min-height:80px;"></textarea>
-            <button type="submit" class="btn-enhanced" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:0.7rem 1.2rem;font-weight:600;font-size:1rem;">Send Message</button>
-            <button type="button" id="cancel-contact-agent" style="background:none;color:#6366f1;border:none;font-weight:600;margin-top:0.5rem;">Cancel</button>
+            <button type="submit" class="btn-enhanced" style="background:#007bff;color:#fff;border:none;border-radius:8px;padding:0.7rem 1.2rem;font-weight:600;font-size:1rem;">Send Message</button>
+            <button type="button" id="cancel-contact-agent" style="background:none;color:#007bff;border:none;font-weight:600;margin-top:0.5rem;">Cancel</button>
         </form>
     `;
 
@@ -2841,7 +2859,7 @@ function showPropertyDetailsModal(propertyId) {
                 <img class="carousel-img" src="${images[0]}" alt="Property photo" style="width:100%;height:100%;object-fit:cover;object-position:center;transition:opacity 0.3s;">
                 <button class="carousel-arrow right" style="position:absolute;top:50%;right:1rem;transform:translateY(-50%);background:rgba(255,255,255,0.8);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;z-index:2;font-size:1.5rem;cursor:pointer;">&#8594;</button>
                 <div class="carousel-dots" style="position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:0.5rem;">
-                    ${images.map((_,i)=>`<span class="carousel-dot" style="width:10px;height:10px;border-radius:50%;background:${i===0?'#6366f1':'#e0e0e0'};display:inline-block;"></span>`).join('')}
+                    ${images.map((_,i)=>`<span class="carousel-dot" style="width:10px;height:10px;border-radius:50%;background:${i===0?'#007bff':'#e0e0e0'};display:inline-block;"></span>`).join('')}
                 </div>
             </div>
         `;
@@ -2866,7 +2884,7 @@ function showPropertyDetailsModal(propertyId) {
         <button id="close-property-details-modal" aria-label="Close" style="position:absolute;top:1.2rem;right:1.2rem;font-size:2rem;background:rgba(255,255,255,0.85);border:none;cursor:pointer;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(99,102,241,0.08);transition:background 0.2s;z-index:10;">&times;</button>
         <div style="padding:2rem;">
             <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
-                <span style="background:#6366f1;color:#fff;padding:6px 18px;border-radius:16px;font-size:1rem;font-weight:600;">${property.status}</span>
+                <span style="background:#007bff;color:#fff;padding:6px 18px;border-radius:16px;font-size:1rem;font-weight:600;">${property.status}</span>
                 <span style="font-size:1.3rem;font-weight:700;color:#1C1C1E;">${property.status === 'For Rent' ? `$${property.price}/week` : `$${property.price.toLocaleString()}`}</span>
             </div>
             <h2 style="margin:0 0 0.5rem 0;font-size:2rem;font-family:'Outfit',sans-serif;">${property.title}</h2>
@@ -2899,7 +2917,7 @@ function showPropertyDetailsModal(propertyId) {
         function updateCarousel(idx) {
             imgEl.src = images[idx];
             dots.forEach((dot, i) => {
-                dot.style.background = i === idx ? '#6366f1' : '#e0e0e0';
+                dot.style.background = i === idx ? '#007bff' : '#e0e0e0';
             });
         }
         leftBtn.onclick = (e) => {
@@ -3696,3 +3714,159 @@ function handleSignIn() {
 function handleJoin() {
     openModal('join-modal-overlay');
 }
+
+// AI Search Bar Handler for Zendo
+// Applies to all pages with a search bar (homepage, home loans, commercial, sell, etc.)
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Helper: Attach search handler to a form by ID and input by ID
+  function attachSearchHandler(formId, inputId, placeholderText) {
+    var form = document.getElementById(formId);
+    var input = document.getElementById(inputId);
+    if (!form || !input) return;
+    if (placeholderText) input.placeholder = placeholderText;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var query = input.value.trim();
+      if (!query) {
+        input.classList.add('input-error');
+        input.focus();
+        return;
+      } else {
+        input.classList.remove('input-error');
+      }
+      // Encode query for URL
+      var params = new URLSearchParams({ q: query });
+      window.location.href = 'search-results.html?' + params.toString();
+    });
+  }
+
+  // Homepage AI search
+  attachSearchHandler('ai-search-form', 'ai-search-input', 'Search by location, property type, or budget...');
+
+  // Commercial page AI search
+  attachSearchHandler('commercial-search-form', 'commercial-search-input', 'Search by suburb, lease type, or business need...');
+
+  // Home loans page (if needed, can add more forms here)
+  // attachSearchHandler('home-loans-search-form', 'home-loans-search-input', 'Search home loans by lender, rate, or feature...');
+
+  // Sell page sold search (optional: can be adapted for sold property search)
+  attachSearchHandler('sold-search-form', 'suburb-search', 'Search sold properties by suburb, postcode, or type...');
+
+  // Optional: Add error style for invalid input
+  var style = document.createElement('style');
+  style.innerHTML = '.input-error { border-color: #ef4444 !important; box-shadow: 0 0 0 2px #fee2e2; }';
+  document.head.appendChild(style);
+});
+
+// Zendo AI Chatbot Functionality
+(function() {
+  // Elements
+  var toggleBtn = document.getElementById('ai-chatbot-toggle');
+  var chatbotSection = document.getElementById('ai-chatbot-embedded');
+  var inputForm = document.getElementById('ai-chatbot-input-form');
+  var inputField = document.getElementById('ai-chatbot-input');
+  var messagesContainer = chatbotSection ? chatbotSection.querySelector('.chat-messages') : null;
+
+  if (!toggleBtn || !chatbotSection || !inputForm || !inputField || !messagesContainer) return;
+
+  // Hide input initially (handled by CSS .active)
+  chatbotSection.classList.remove('active');
+
+  // Show chatbot on button click with animation
+  toggleBtn.addEventListener('click', function() {
+    chatbotSection.classList.add('active');
+    setTimeout(function() { inputField.focus(); }, 500); // Wait for animation
+  });
+
+  // Typing effect for bot
+  function botTypingEffect(text, callback) {
+    // Add typing indicator
+    var typingMsg = document.createElement('div');
+    typingMsg.className = 'message bot typing';
+    typingMsg.innerHTML = '<div class="message-content"><span class="typing-dots"><span>.</span><span>.</span><span>.</span></span></div>';
+    messagesContainer.appendChild(typingMsg);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Animate dots
+    var dots = typingMsg.querySelector('.typing-dots');
+    var dotInterval = setInterval(function() {
+      dots.classList.toggle('blink');
+    }, 500);
+
+    // After delay, show bot message
+    setTimeout(function() {
+      clearInterval(dotInterval);
+      typingMsg.remove();
+      addBotMessage(text);
+      if (callback) callback();
+    }, Math.max(900, Math.min(2000, text.length * 40)));
+  }
+
+  // Add user message
+  function addUserMessage(text) {
+    var msg = document.createElement('div');
+    msg.className = 'message user';
+    msg.innerHTML = '<div class="message-content">' + escapeHTML(text) + '</div>';
+    messagesContainer.appendChild(msg);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Add bot message
+  function addBotMessage(text) {
+    var msg = document.createElement('div');
+    msg.className = 'message bot';
+    msg.innerHTML = '<div class="message-content">' + escapeHTML(text) + '</div>';
+    messagesContainer.appendChild(msg);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Escape HTML
+  function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, function(tag) {
+      const chars = {
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      };
+      return chars[tag] || tag;
+    });
+  }
+
+  // Preset Q&A
+  var presetAnswers = [
+    {
+      q: /how much deposit|minimum deposit|deposit/i,
+      a: "Most lenders require a minimum deposit of 5-20% of the property's value. I can help you estimate your required deposit—just tell me your budget!"
+    },
+    {
+      q: /borrowing power|how much can i borrow|maximum loan/i,
+      a: "Your borrowing power depends on your income, expenses, and debts. Would you like to calculate an estimate?"
+    },
+    {
+      q: /repayments|monthly payment|how much per month/i,
+      a: "I can estimate your monthly repayments. Please provide your loan amount, interest rate, and loan term."
+    }
+  ];
+
+  // Handle user input
+  inputForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var userText = inputField.value.trim();
+    if (!userText) return;
+    addUserMessage(userText);
+    inputField.value = '';
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Find preset answer
+    var found = presetAnswers.find(function(pair) {
+      return pair.q.test(userText);
+    });
+    if (found) {
+      botTypingEffect(found.a);
+    } else {
+      botTypingEffect("I'm here to help with your home loan questions! Try asking about deposits, borrowing power, or repayments.");
+    }
+  });
+
+  // Typing effect CSS is in styles.css
+})();
